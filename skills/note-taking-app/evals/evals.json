@@ -1,0 +1,23 @@
+{
+  "skill_name": "note-taking-app",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build a new Next.js note-taking web app. Use a 2-column layout (Sidebar + Main Editor) with Firebase Firestore for storage. Include folder and tag management and ensure a premium minimalist aesthetic.",
+      "expected_output": "A complete Next.js project with a 2-column layout, Sidebar for folders/tags, and an Editor, integrated with Firebase Firestore.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I have an existing Next.js notes app. Help me add advanced AI features: Voice-to-Text with auto-summarization and Image OCR. Use the scripts in the execution/ directory for the actual processing logic.",
+      "expected_output": "Updated app code extending components like VoiceBlock and Editor to use the execution layer for AI features, including the necessary API routes.",
+      "files": ["components/VoiceBlock.tsx", "components/Editor.tsx", "execution/stt_processor.js", "execution/ocr_processor.js"]
+    },
+    {
+      "id": 3,
+      "prompt": "My current app has 3 columns and feels cluttered. Refactor it to a sleek 2-column design. Ensure custom folders and multi-select tags are easily accessible and that the UI feels premium with animations.",
+      "expected_output": "Refactored layout components (Sidebar, Home page) to a 2-column structure, with improved aesthetics and polished interactions.",
+      "files": ["app/page.tsx", "components/Sidebar.tsx", "components/NoteListPane.tsx"]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap&subset=latin,latin-ext');
+
+:root, .dark {
+  --background: #ffffff;
+  --sidebar: #fcfcfc;
+  --foreground: #000000;
+  --accent: #000000;
+  --accent-soft: #f3f4f6;
+  --border: #f3f4f6;
+  --muted: #9ca3af;
+}
+
+* {
+  @apply transition-colors duration-200;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Google Sans', 'Outfit', 'Inter', sans-serif;
+  @apply antialiased;
+}
+
+h1, h2, h3, .serif {
+  font-family: 'Google Sans', 'Outfit', 'Inter', sans-serif;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+.notion-editor {
+  @apply outline-none text-[16px] leading-[1.8] text-black selection:bg-gray-100;
+}
+
+.notion-editor p {
+  @apply mb-4;
+}
+
+.notion-editor h1 {
+  @apply text-4xl font-semibold mb-6 mt-10 tracking-tight text-black;
+}
+
+.notion-editor h2 {
+  @apply text-2xl font-semibold mb-4 mt-8 tracking-tight text-black;
+}
+
+.glass {
+  @apply bg-white/70 backdrop-blur-xl;
+}
+
+.sidebar-glass {
+  @apply bg-white backdrop-blur-2xl border-r border-gray-100;
+}
+
+.btn-primary {
+  @apply px-4 py-2 bg-black text-white rounded-xl font-semibold shadow-lg hover:bg-gray-900 active:scale-95 transition-all;
+}
+
+.tab-active {
+  @apply bg-gray-50 shadow-sm border border-gray-100 text-black font-bold;
+}
+
+.note-card {
+  @apply p-4 rounded-2xl border border-transparent hover:bg-gray-50/50 transition-all focus-within:ring-2 focus-within:ring-black/5;
+}
