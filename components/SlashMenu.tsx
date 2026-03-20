@@ -63,14 +63,7 @@ export default function SlashMenu({ editor, position, onSelect, onClose, classNa
   const handleSelect = (id: string) => {
     if (onSelect) {
       onSelect(id);
-      return;
     }
-
-    if (id === "h1") editor.chain().focus().toggleHeading({ level: 1 }).run();
-    if (id === "h2") editor.chain().focus().toggleHeading({ level: 2 }).run();
-    if (id === "bullet") editor.chain().focus().toggleBulletList().run();
-    if (id === "todo") editor.chain().focus().toggleTaskList().run();
-    
     if (onClose) onClose();
   };
 

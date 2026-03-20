@@ -9,7 +9,7 @@ import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
 import Heading from "@tiptap/extension-heading";
 import Link from "@tiptap/extension-link";
-import { Node, mergeAttributes } from "@tiptap/core";
+import { Node, mergeAttributes, textblockTypeInputRule } from "@tiptap/core";
 import { updateNote, createFolder, subscribeToFolders, Note, Folder } from "@/lib/notes";
 import { doc, onSnapshot, collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -89,8 +89,20 @@ export default function Editor({ noteId, onFocusChange }: EditorProps) {
 
   const editor = useEditor({
     extensions: [
-      StarterKit.configure({ heading: false }),
-      Heading.configure({ levels: [1, 2, 3] }),
+      StarterKit.configure({ 
+        heading: false,
+      }),
+      Heading.extend({
+        addInputRules() {
+          return [
+            textblockTypeInputRule({
+              find: /^(#{1,3})\s$/,
+              type: this.type,
+              getAttributes: match => ({ level: match[1].length }),
+            }),
+          ];
+        },
+      }).configure({ levels: [1, 2, 3] }),
       Placeholder.configure({
         placeholder: ({ node }) => {
           if (node.type.name === 'heading') return `Heading ${node.attrs.level}`;
@@ -133,12 +145,20 @@ export default function Editor({ noteId, onFocusChange }: EditorProps) {
       }
       const { view } = editor;
       const { from, to } = view.state.selection;
-      const start = view.coordsAtPos(from);
-      const end = view.coordsAtPos(to);
-      setSelectionMenuPos({
-        top: Math.min(start.top, end.top) - 40,
-        left: (start.left + end.left) / 2
-      });
+      
+      try {
+        const start = view.coordsAtPos(from);
+        const end = view.coordsAtPos(to);
+        
+        // Ensure menu follows selection horizontally, but stays above the top-most line of selection
+        setSelectionMenuPos({
+          top: Math.min(start.top, end.top) - 45,
+          left: (start.left + end.left) / 2
+        });
+      } catch (e) {
+        // Prevent crashes if selection coords are out of view
+        setSelectionMenuPos(null);
+      }
     },
   }, [noteId]); // Added noteId to dependency array for editor
 
@@ -229,31 +249,32 @@ export default function Editor({ noteId, onFocusChange }: EditorProps) {
       const { selection } = view.state;
       const coords = view.coordsAtPos(selection.from);
       setMenuPosition({ top: coords.bottom, left: coords.left });
-    } else if (event.key === "#") {
+      return false;
+    } 
+    
+    // Header shortcuts are now handled by Tiptap InputRules (# + Space)
+    // Inline tags are handled by # + TagName logic below
+    if (event.key === "#") {
       const { selection } = view.state;
       const coords = view.coordsAtPos(selection.from);
       setTagMenuPos({ top: coords.bottom, left: coords.left });
       setTagQuery("");
-    } else {
-      if (tagMenuPos) {
-        if (event.key === "Backspace" && tagQuery === "") {
+    } else if (tagMenuPos) {
+      if (event.key === "Backspace" && tagQuery === "") {
+        setTagMenuPos(null);
+      } else if (event.key === " " || event.key === "Enter") {
+        // If it's just # followed by space, it's a Header shortcut (# ), let InputRule handle it
+        if (tagQuery === "") {
           setTagMenuPos(null);
-        } else if (event.key === " " || event.key === "Enter") {
-          // If tagQuery is just hashes (one or more), it's likely a header shortcut (# , ## , ### )
-          // In this case, we close the menu and let Tiptap handle the input rule.
-          const isHeaderShortcut = /^#*$/.test(tagQuery);
-          
-          if (tagQuery && !isHeaderShortcut) {
-            handleSelectTag(tagQuery);
-            event.preventDefault();
-            return true;
-          }
-          setTagMenuPos(null);
+        } else {
+          handleSelectTag(tagQuery);
+          event.preventDefault();
+          return true;
         }
- else if (event.key.length === 1) {
-          setTagQuery(prev => prev + event.key);
-        }
+      } else if (event.key.length === 1) {
+        setTagQuery(prev => prev + event.key);
       }
+    } else {
       setMenuPosition(null);
     }
     return false;
@@ -547,7 +568,7 @@ export default function Editor({ noteId, onFocusChange }: EditorProps) {
             initial={{ opacity: 0, y: 5, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 5, scale: 0.95 }}
-            className="fixed z-[70] bg-black text-white px-1.5 py-1 rounded-xl shadow-2xl flex items-center gap-0.5"
+            className="fixed z-[70] bg-black text-white px-1.5 py-1.5 rounded-2xl shadow-2xl flex items-center gap-1"
             style={{ 
               top: selectionMenuPos.top, 
               left: selectionMenuPos.left,
@@ -556,15 +577,21 @@ export default function Editor({ noteId, onFocusChange }: EditorProps) {
           >
             <button 
               onClick={() => editor.chain().focus().toggleBold().run()}
-              className={cn("p-2 hover:bg-white/10 rounded-lg transition-colors", editor.isActive("bold") && "text-blue-400")}
+              className={cn("p-2 hover:bg-white/10 rounded-xl transition-colors", editor.isActive("bold") && "text-blue-400")}
             >
-              <Bold className="w-4 h-4" />
+              <Bold className="w-3.5 h-3.5" />
             </button>
             <button 
               onClick={() => editor.chain().focus().toggleItalic().run()}
-              className={cn("p-2 hover:bg-white/10 rounded-lg transition-colors", editor.isActive("italic") && "text-blue-400")}
+              className={cn("p-2 hover:bg-white/10 rounded-xl transition-colors", editor.isActive("italic") && "text-blue-400")}
             >
-              <Italic className="w-4 h-4" />
+              <Italic className="w-3.5 h-3.5" />
+            </button>
+            <button 
+              onClick={() => editor.chain().focus().toggleCode().run()}
+              className={cn("p-2 hover:bg-white/10 rounded-xl transition-colors", editor.isActive("code") && "text-blue-400")}
+            >
+              <Type className="w-3.5 h-3.5" />
             </button>
             <div className="w-px h-4 bg-white/20 mx-1" />
             <button 
@@ -572,9 +599,9 @@ export default function Editor({ noteId, onFocusChange }: EditorProps) {
                 const url = window.prompt("Enter URL:");
                 if (url) editor.chain().focus().setLink?.({ href: url }).run();
               }}
-              className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              className="p-2 hover:bg-white/10 rounded-xl transition-colors"
             >
-              <LinkIcon className="w-4 h-4" />
+              <LinkIcon className="w-3.5 h-3.5" />
             </button>
           </motion.div>
         )}
