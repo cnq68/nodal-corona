@@ -31,6 +31,11 @@ Hệ thống tuân thủ cấu trúc phân cấp nghiêm ngặt để giữ cho 
 - **Điều hướng (Navigation)**:
   - Sử dụng icon mũi tên (Chevron) để đóng/mở các cấp thư mục.
   - **Trạng thái đóng/mở được lưu lại (Persistent state)**: Đảm bảo khi người dùng reload trang, cây thư mục vẫn giữ nguyên vị trí cũ.
+- **Quản lý Thùng rác (Trash Management)**:
+  - **Di chuyển vào Trash**: Khi xóa note hoặc folder, dữ liệu sẽ được chuyển vào folder `trash`.
+  - **Xóa vĩnh viễn (Permanent Delete)**:
+    - **Trải nghiệm**: Trong folder Trash, menu của mỗi note sẽ xuất hiện thêm tùy chọn `Delete Permanently`.
+    - **Chi tiết**: Yêu cầu xác nhận qua browser prompt trước khi thực hiện xóa vĩnh viễn khỏi database. Hành động này không thể hoàn tác.
 
 ## 4. Hệ thống Tìm kiếm Toàn diện (Search System)
 Thanh tìm kiếm thường ẩn để giữ giao diện tối giản, chỉ xuất hiện qua phím tắt hoặc icon nhỏ.
@@ -78,7 +83,9 @@ Hệ thống thẻ giúp kết nối các thông tin nằm ở các thư mục k
 - **UI Elements**: Subtle borders, generous whitespace, high-end editorial feel.
 
 ## 9. Trải nghiệm Di động (Mobile UX)
-- **Tự động đóng Sidebar**: Khi ở giao diện mobile, nếu Sidebar đang mở và người dùng click vào vùng nội dung hoặc backdrop mờ, Sidebar sẽ tự động đóng lại để tối ưu không gian.
+- **Tự động đóng Sidebar**: 
+  - **Khi khởi chạy**: Trên giao diện mobile, Sidebar sẽ tự động đóng lại khi ứng dụng vừa load để ưu tiên nội dung.
+  - **Khi tương tác**: Nếu Sidebar đang mở và người dùng click vào vùng nội dung hoặc backdrop mờ, Sidebar sẽ tự động đóng lại để tối ưu không gian.
 - **Footer Sidebar**: Nút Log Out (Thoát) được đặt ở dưới cùng của Sidebar, cùng hàng với trạng thái Cloud Sync Active, biểu tượng hướng về bên trái để biểu thị hành động quay lại/đăng xuất.
 
 ## 10. Tiêu chuẩn Lập trình & Best Practices (Coding Standards)

@@ -30,6 +30,13 @@ export default function Home() {
   const [folders, setFolders] = useState<Folder[]>([]);
 
   useEffect(() => {
+    // Auto-hide sidebar on mobile on mount
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
+  useEffect(() => {
     if (user && activeWorkspaceId) {
       const unsubNotes = subscribeToNotes(user.uid, activeWorkspaceId, setNotes);
       const unsubFolders = subscribeToFolders(user.uid, activeWorkspaceId, setFolders);

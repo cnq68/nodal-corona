@@ -25,6 +25,7 @@ import {
   subscribeToWorkspaces,
   createNote,
   updateNote,
+  deleteNote,
   createFolder,   createWorkspace,
    deleteWorkspace,
    deleteFolder,
@@ -671,6 +672,23 @@ const FolderItem = ({
                                         </button>
                                       );
                                     })}
+                                    {note.folderId === "trash" && (
+                                      <button
+                                        onClick={async (e) => {
+                                          e.stopPropagation();
+                                          if (window.confirm("Delete this thought permanently? This cannot be undone.")) {
+                                            await deleteNote(note.id);
+                                            setMenuOpenNoteId(null);
+                                          }
+                                        }}
+                                        className="w-full text-left px-4 py-2 text-[11px] hover:bg-red-50 text-red-500 transition-colors bg-transparent font-bold border-t border-gray-50 mt-1"
+                                      >
+                                        <div className="flex items-center gap-2">
+                                          <Trash2 className="w-3 h-3" />
+                                          Delete Permanently
+                                        </div>
+                                      </button>
+                                    )}
                                   </div>
                                 </motion.div>
                               </>
